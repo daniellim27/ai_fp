@@ -1,0 +1,5 @@
+{
+  "name": "VulnScan AI",
+  "description": "A framer-style, AI-powered security scanner that analyzes GitHub repositories for XSS vulnerabilities using Gemini 2.5.",
+  "requestFramePermissions": []
+}
