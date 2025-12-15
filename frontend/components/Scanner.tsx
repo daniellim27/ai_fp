@@ -247,7 +247,7 @@ const Scanner: React.FC<ScannerProps> = ({ repo, token, onBack }) => {
 
                           <Button
                             onClick={() => setSelectedVuln(vuln)}
-                            className="text-xs py-1.5 px-3 h-auto bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-300 border border-indigo-500/30"
+                            className="text-xs py-1.5 px-3 h-auto bg-white/5 hover:bg-white/10 text-white border border-white/10"
                           >
                             View Code Analysis
                           </Button>
@@ -275,9 +275,9 @@ const Scanner: React.FC<ScannerProps> = ({ repo, token, onBack }) => {
       {/* Code Analysis Modal */}
       {selectedVuln && (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-fade-in">
-          <div className="bg-gray-900 rounded-2xl border border-gray-800 w-full max-w-4xl max-h-[90vh] flex flex-col shadow-2xl animate-scale-in">
+          <div className="bg-[#0A0A0A] rounded-2xl border border-white/10 w-full max-w-4xl max-h-[90vh] flex flex-col shadow-2xl animate-scale-in">
             {/* Modal Header */}
-            <div className="p-6 border-b border-gray-800 flex justify-between items-start">
+            <div className="p-6 border-b border-white/5 flex justify-between items-start">
               <div>
                 <div className="flex items-center gap-3 mb-2">
                   <span className={`px-2 py-1 rounded text-xs font-bold uppercase tracking-wider border ${getSeverityColor(selectedVuln.severity)}`}>
@@ -289,7 +289,7 @@ const Scanner: React.FC<ScannerProps> = ({ repo, token, onBack }) => {
               </div>
               <button
                 onClick={() => setSelectedVuln(null)}
-                className="text-gray-500 hover:text-white transition-colors p-2 hover:bg-white/10 rounded-lg"
+                className="text-gray-500 hover:text-white transition-colors p-2 hover:bg-white/5 rounded-lg"
               >
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path></svg>
               </button>
@@ -299,7 +299,7 @@ const Scanner: React.FC<ScannerProps> = ({ repo, token, onBack }) => {
             <div className="flex-1 overflow-y-auto p-6 space-y-6 custom-scrollbar">
               <div className="space-y-2">
                 <h4 className="text-sm font-medium text-gray-300 uppercase tracking-wider">Description</h4>
-                <p className="text-gray-400 leading-relaxed bg-gray-800/30 p-4 rounded-lg border border-gray-800">
+                <p className="text-gray-400 leading-relaxed bg-white/5 p-4 rounded-lg border border-white/5">
                   {selectedVuln.description}
                 </p>
               </div>
@@ -311,7 +311,7 @@ const Scanner: React.FC<ScannerProps> = ({ repo, token, onBack }) => {
                     Vulnerable Code
                   </h4>
                 </div>
-                <div className="bg-red-950/10 border border-red-500/20 rounded-lg overflow-hidden">
+                <div className="bg-red-500/5 border border-red-500/10 rounded-lg overflow-hidden">
                   <div className="p-4 overflow-x-auto">
                     <pre className="text-sm font-mono text-red-200 whitespace-pre-wrap break-all">
                       {selectedVuln.codeSnippet}
@@ -322,7 +322,7 @@ const Scanner: React.FC<ScannerProps> = ({ repo, token, onBack }) => {
             </div>
 
             {/* Modal Footer */}
-            <div className="p-6 border-t border-gray-800 bg-gray-900/50 flex justify-end">
+            <div className="p-6 border-t border-white/5 bg-white/5 flex justify-end">
               <Button variant="secondary" onClick={() => setSelectedVuln(null)}>
                 Close
               </Button>
