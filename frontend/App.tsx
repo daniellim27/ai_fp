@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { AppView, GitHubRepo } from './types';
 import Hero from './components/Hero';
 import LoginModal from './components/LoginModal';
@@ -15,6 +15,8 @@ const App: React.FC = () => {
   const [selectedRepo, setSelectedRepo] = useState<GitHubRepo | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [showLoginModal, setShowLoginModal] = useState(false);
+  const wasLoggedInRef = useRef(false);
+
 
   useEffect(() => {
     // Check active session on mount
@@ -22,7 +24,7 @@ const App: React.FC = () => {
       setSession(session);
       if (session?.provider_token) {
         setToken(session.provider_token);
-        // Don't redirect - let user stay on current view
+        wasLoggedInRef.current = true; // Mark as already logged in
       }
     });
 
@@ -35,14 +37,16 @@ const App: React.FC = () => {
         setToken(session.provider_token);
       }
 
-      // Handle sign in - redirect to repo list and close modal
-      if (event === 'SIGNED_IN' && session) {
+      // Handle sign in - redirect to repo list and close modal (only on INITIAL login)
+      if (event === 'SIGNED_IN' && session && !wasLoggedInRef.current) {
+        wasLoggedInRef.current = true;
         setView(AppView.REPO_LIST);
         setShowLoginModal(false);
       }
 
       // Handle sign out - go back to landing
       if (event === 'SIGNED_OUT') {
+        wasLoggedInRef.current = false;
         setToken('');
         setView(AppView.LANDING);
         localStorage.removeItem('currentView');
