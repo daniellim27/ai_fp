@@ -1,62 +1,55 @@
 import React, { useState, useEffect } from 'react';
 import { AppView, GitHubRepo } from './types';
 import Hero from './components/Hero';
-import TokenInput from './components/TokenInput';
+import Login from './components/Login';
 import RepoList from './components/RepoList';
 import Scanner from './components/Scanner';
 import QuickScan from './components/QuickScan';
-
-// Cookie helper functions
-const setCookie = (name: string, value: string, days: number = 30) => {
-  const expires = new Date();
-  expires.setTime(expires.getTime() + days * 24 * 60 * 60 * 1000);
-  document.cookie = `${name}=${encodeURIComponent(value)};expires=${expires.toUTCString()};path=/;SameSite=Strict`;
-};
-
-const getCookie = (name: string): string | null => {
-  const nameEQ = name + "=";
-  const ca = document.cookie.split(';');
-  for (let i = 0; i < ca.length; i++) {
-    let c = ca[i];
-    while (c.charAt(0) === ' ') c = c.substring(1, c.length);
-    if (c.indexOf(nameEQ) === 0) return decodeURIComponent(c.substring(nameEQ.length, c.length));
-  }
-  return null;
-};
-
-const deleteCookie = (name: string) => {
-  document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/`;
-};
+import History from './components/History';
+import { supabase } from './services/supabaseClient';
+import { Session } from '@supabase/supabase-js';
 
 const App: React.FC = () => {
   const [view, setView] = useState<AppView>(AppView.LANDING);
   const [token, setToken] = useState<string>('');
   const [selectedRepo, setSelectedRepo] = useState<GitHubRepo | null>(null);
+  const [session, setSession] = useState<Session | null>(null);
 
-  // Load token from cookie on mount
   useEffect(() => {
-    const savedToken = getCookie('github_token');
-    if (savedToken) {
-      setToken(savedToken);
-      setView(AppView.REPO_LIST); // Skip to repo list if token exists
-    }
-  }, []);
+    // Check active session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+      if (session?.provider_token) {
+        setToken(session.provider_token);
+      }
+    });
+
+    // Listen for auth changes
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session);
+      if (session?.provider_token) {
+        setToken(session.provider_token);
+        // If we just logged in, go to repo list
+        if (view === AppView.TOKEN_INPUT) {
+          setView(AppView.REPO_LIST);
+        }
+      } else if (!session) {
+        setToken('');
+        setView(AppView.LANDING);
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, [view]);
 
   const handleStart = () => {
-    // Check if token already exists in cookie
-    const savedToken = getCookie('github_token');
-    if (savedToken) {
-      setToken(savedToken);
+    if (session) {
       setView(AppView.REPO_LIST);
     } else {
-      setView(AppView.TOKEN_INPUT);
+      setView(AppView.TOKEN_INPUT); // Redirect to Login
     }
-  };
-
-  const handleTokenSubmit = (newToken: string) => {
-    setToken(newToken);
-    setCookie('github_token', newToken, 30); // Save for 30 days
-    setView(AppView.REPO_LIST);
   };
 
   const handleRepoSelect = (repo: GitHubRepo) => {
@@ -69,9 +62,9 @@ const App: React.FC = () => {
     setView(AppView.REPO_LIST);
   };
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
     setToken('');
-    deleteCookie('github_token'); // Clear saved token
     setSelectedRepo(null);
     setView(AppView.LANDING);
   };
@@ -81,12 +74,15 @@ const App: React.FC = () => {
   };
 
   const handleGoToGithub = () => {
-    const savedToken = getCookie('github_token');
-    if (savedToken || token) {
+    if (session) {
       setView(AppView.REPO_LIST);
     } else {
       setView(AppView.TOKEN_INPUT);
     }
+  };
+
+  const handleHistory = () => {
+    setView(AppView.HISTORY);
   };
 
   return (
@@ -100,10 +96,7 @@ const App: React.FC = () => {
         )}
 
         {view === AppView.TOKEN_INPUT && (
-          <TokenInput
-            onTokenSubmit={handleTokenSubmit}
-            onCancel={() => setView(AppView.LANDING)}
-          />
+          <Login onCancel={() => setView(AppView.LANDING)} />
         )}
 
         {view === AppView.REPO_LIST && (
@@ -112,6 +105,7 @@ const App: React.FC = () => {
             onSelectRepo={handleRepoSelect}
             onBack={handleLogout}
             onQuickScan={handleQuickScan}
+            onHistory={handleHistory}
           />
         )}
 
@@ -128,6 +122,10 @@ const App: React.FC = () => {
             onBack={() => setView(AppView.LANDING)}
             onGoToGithub={handleGoToGithub}
           />
+        )}
+
+        {view === AppView.HISTORY && (
+          <History onBack={() => setView(AppView.REPO_LIST)} />
         )}
       </div>
     </div>

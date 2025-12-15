@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { GitHubRepo, GitHubFile, FileScanResult, Vulnerability } from '../types';
 import { fetchRepoFiles, fetchFileContent } from '../services/githubService';
 import { analyzeCodeForVulnerabilities } from '../services/codebertService';
+import { saveScan } from '../services/historyService';
 import { SUPPORTED_EXTENSIONS } from '../constants';
 import Button from './Button';
 
@@ -69,6 +70,8 @@ const Scanner: React.FC<ScannerProps> = ({ repo, token, onBack }) => {
     setScanResults([]);
     setProgress(0);
 
+    const allVulnerabilities: Vulnerability[] = [];
+
     for (let i = 0; i < files.length; i++) {
       const file = files[i];
       if (mounted.current) setCurrentFile(file.path);
@@ -81,6 +84,7 @@ const Scanner: React.FC<ScannerProps> = ({ repo, token, onBack }) => {
         }
 
         const vulnerabilities = await analyzeCodeForVulnerabilities(content, file.path);
+        allVulnerabilities.push(...vulnerabilities);
 
         const result: FileScanResult = {
           fileName: file.path.split('/').pop() || file.path,
@@ -103,6 +107,9 @@ const Scanner: React.FC<ScannerProps> = ({ repo, token, onBack }) => {
     if (mounted.current) {
       setStatus('complete');
       setCurrentFile('');
+
+      // Save scan to history
+      await saveScan('github_repo', repo.full_name, allVulnerabilities);
     }
   };
 

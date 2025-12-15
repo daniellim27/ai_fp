@@ -45,4 +45,5 @@ export enum AppView {
   REPO_LIST = 'REPO_LIST',
   SCANNING = 'SCANNING',
   QUICK_SCAN = 'QUICK_SCAN',
+  HISTORY = 'HISTORY',
 }

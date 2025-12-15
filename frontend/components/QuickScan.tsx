@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { analyzeCodeForVulnerabilities } from '../services/codebertService';
+import { saveScan } from '../services/historyService';
 import { Vulnerability } from '../types';
 
 interface QuickScanProps {
@@ -23,6 +24,9 @@ const QuickScan: React.FC<QuickScanProps> = ({ onBack, onGoToGithub }) => {
             const fileName = language === 'php' ? 'code.php' : 'code.js';
             const vulnerabilities = await analyzeCodeForVulnerabilities(code, fileName);
             setResults(vulnerabilities);
+
+            // Save to history
+            await saveScan('quick_scan', 'Code Snippet', vulnerabilities, language, code);
         } catch (error) {
             console.error('Scan failed:', error);
             setResults([]);

@@ -8,9 +8,10 @@ interface RepoListProps {
     onSelectRepo: (repo: GitHubRepo) => void;
     onBack: () => void;
     onQuickScan: () => void;
+    onHistory: () => void;
 }
 
-const RepoList: React.FC<RepoListProps> = ({ token, onSelectRepo, onBack, onQuickScan }) => {
+const RepoList: React.FC<RepoListProps> = ({ token, onSelectRepo, onBack, onQuickScan, onHistory }) => {
     const [repos, setRepos] = useState<GitHubRepo[]>([]);
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
@@ -69,6 +70,9 @@ const RepoList: React.FC<RepoListProps> = ({ token, onSelectRepo, onBack, onQuic
                     />
                     <Button onClick={onQuickScan} className="shrink-0">
                         Quick Scan
+                    </Button>
+                    <Button variant="secondary" onClick={onHistory} className="shrink-0">
+                        History
                     </Button>
                     <Button variant="ghost" onClick={onBack} className="shrink-0">
                         Log Out
