@@ -44,4 +44,5 @@ export enum AppView {
   TOKEN_INPUT = 'TOKEN_INPUT',
   REPO_LIST = 'REPO_LIST',
   SCANNING = 'SCANNING',
+  QUICK_SCAN = 'QUICK_SCAN',
 }

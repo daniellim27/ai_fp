@@ -4,6 +4,7 @@ import Hero from './components/Hero';
 import TokenInput from './components/TokenInput';
 import RepoList from './components/RepoList';
 import Scanner from './components/Scanner';
+import QuickScan from './components/QuickScan';
 
 // Cookie helper functions
 const setCookie = (name: string, value: string, days: number = 30) => {
@@ -73,7 +74,11 @@ const App: React.FC = () => {
     deleteCookie('github_token'); // Clear saved token
     setSelectedRepo(null);
     setView(AppView.LANDING);
-  }
+  };
+
+  const handleQuickScan = () => {
+    setView(AppView.QUICK_SCAN);
+  };
 
   return (
     <div className="min-h-screen bg-[#050505] text-white selection:bg-indigo-500/30">
@@ -82,7 +87,7 @@ const App: React.FC = () => {
 
       <div className="relative z-10">
         {view === AppView.LANDING && (
-          <Hero onStart={handleStart} />
+          <Hero onStart={handleStart} onQuickScan={handleQuickScan} />
         )}
 
         {view === AppView.TOKEN_INPUT && (
@@ -106,6 +111,10 @@ const App: React.FC = () => {
             token={token}
             onBack={handleBackToRepos}
           />
+        )}
+
+        {view === AppView.QUICK_SCAN && (
+          <QuickScan onBack={() => setView(AppView.LANDING)} />
         )}
       </div>
     </div>
