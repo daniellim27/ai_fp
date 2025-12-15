@@ -37,7 +37,7 @@ const RepoList: React.FC<RepoListProps> = ({ token, onSelectRepo, onBack, onQuic
         return matchesSearch && matchesLang;
     });
 
-    const uniqueLanguages = ['All', ...Array.from(new Set(repos.map(r => r.language).filter(Boolean)))];
+    const supportedLanguages = ['All', 'JavaScript', 'PHP'];
 
     return (
         <div className="min-h-screen p-6 md:p-12 max-w-7xl mx-auto">
@@ -53,8 +53,8 @@ const RepoList: React.FC<RepoListProps> = ({ token, onSelectRepo, onBack, onQuic
                             onChange={(e) => setFilterLang(e.target.value)}
                             className="w-full sm:w-32 px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-sm text-white focus:outline-none focus:border-indigo-500 appearance-none cursor-pointer"
                         >
-                            {uniqueLanguages.slice(0, 8).map(lang => (
-                                <option key={String(lang)} value={String(lang)} className="bg-gray-900">{lang}</option>
+                            {supportedLanguages.map(lang => (
+                                <option key={lang} value={lang} className="bg-gray-900">{lang}</option>
                             ))}
                         </select>
                         <div className="absolute right-3 top-2.5 pointer-events-none text-gray-400">

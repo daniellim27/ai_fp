@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { AppView, GitHubRepo } from './types';
 import Hero from './components/Hero';
-import Login from './components/Login';
+import LoginModal from './components/LoginModal';
 import RepoList from './components/RepoList';
 import Scanner from './components/Scanner';
 import QuickScan from './components/QuickScan';
@@ -14,41 +14,49 @@ const App: React.FC = () => {
   const [token, setToken] = useState<string>('');
   const [selectedRepo, setSelectedRepo] = useState<GitHubRepo | null>(null);
   const [session, setSession] = useState<Session | null>(null);
+  const [showLoginModal, setShowLoginModal] = useState(false);
 
   useEffect(() => {
-    // Check active session
+    // Check active session on mount
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
       if (session?.provider_token) {
         setToken(session.provider_token);
+        // If already logged in on mount, go to repo list
+        setView(AppView.REPO_LIST);
       }
     });
 
     // Listen for auth changes
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
+    } = supabase.auth.onAuthStateChange((event, session) => {
       setSession(session);
       if (session?.provider_token) {
         setToken(session.provider_token);
-        // If we just logged in, go to repo list
-        if (view === AppView.TOKEN_INPUT) {
-          setView(AppView.REPO_LIST);
-        }
-      } else if (!session) {
+      }
+
+      // Handle sign in - redirect to repo list and close modal
+      if (event === 'SIGNED_IN' && session) {
+        setView(AppView.REPO_LIST);
+        setShowLoginModal(false);
+      }
+
+      // Handle sign out - go back to landing
+      if (event === 'SIGNED_OUT') {
         setToken('');
         setView(AppView.LANDING);
       }
     });
 
     return () => subscription.unsubscribe();
-  }, [view]);
+  }, []);
 
   const handleStart = () => {
     if (session) {
       setView(AppView.REPO_LIST);
     } else {
-      setView(AppView.TOKEN_INPUT); // Redirect to Login
+      setShowLoginModal(true);
     }
   };
 
@@ -77,7 +85,7 @@ const App: React.FC = () => {
     if (session) {
       setView(AppView.REPO_LIST);
     } else {
-      setView(AppView.TOKEN_INPUT);
+      setShowLoginModal(true);
     }
   };
 
@@ -95,9 +103,8 @@ const App: React.FC = () => {
           <Hero onStart={handleStart} onQuickScan={handleQuickScan} />
         )}
 
-        {view === AppView.TOKEN_INPUT && (
-          <Login onCancel={() => setView(AppView.LANDING)} />
-        )}
+        {/* Login Modal */}
+        <LoginModal isOpen={showLoginModal} onClose={() => setShowLoginModal(false)} />
 
         {view === AppView.REPO_LIST && (
           <RepoList
