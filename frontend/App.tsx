@@ -45,11 +45,29 @@ const App: React.FC = () => {
       if (event === 'SIGNED_OUT') {
         setToken('');
         setView(AppView.LANDING);
+        localStorage.removeItem('currentView');
       }
     });
 
     return () => subscription.unsubscribe();
   }, []);
+
+  // Restore view from localStorage on mount if logged in
+  useEffect(() => {
+    if (session?.provider_token) {
+      const savedView = localStorage.getItem('currentView');
+      if (savedView && Object.values(AppView).includes(savedView as AppView) && savedView !== AppView.LANDING) {
+        setView(savedView as AppView);
+      }
+    }
+  }, [session?.provider_token]);
+
+  // Save current view to localStorage
+  useEffect(() => {
+    if (session && view !== AppView.LANDING) {
+      localStorage.setItem('currentView', view);
+    }
+  }, [view, session]);
 
   const handleStart = () => {
     if (session) {
