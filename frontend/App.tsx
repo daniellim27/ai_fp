@@ -22,8 +22,7 @@ const App: React.FC = () => {
       setSession(session);
       if (session?.provider_token) {
         setToken(session.provider_token);
-        // If already logged in on mount, go to repo list
-        setView(AppView.REPO_LIST);
+        // Don't redirect - let user stay on current view
       }
     });
 
