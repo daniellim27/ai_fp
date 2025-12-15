@@ -80,6 +80,15 @@ const App: React.FC = () => {
     setView(AppView.QUICK_SCAN);
   };
 
+  const handleGoToGithub = () => {
+    const savedToken = getCookie('github_token');
+    if (savedToken || token) {
+      setView(AppView.REPO_LIST);
+    } else {
+      setView(AppView.TOKEN_INPUT);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-[#050505] text-white selection:bg-indigo-500/30">
       {/* Background Ambience */}
@@ -102,6 +111,7 @@ const App: React.FC = () => {
             token={token}
             onSelectRepo={handleRepoSelect}
             onBack={handleLogout}
+            onQuickScan={handleQuickScan}
           />
         )}
 
@@ -114,7 +124,10 @@ const App: React.FC = () => {
         )}
 
         {view === AppView.QUICK_SCAN && (
-          <QuickScan onBack={() => setView(AppView.LANDING)} />
+          <QuickScan
+            onBack={() => setView(AppView.LANDING)}
+            onGoToGithub={handleGoToGithub}
+          />
         )}
       </div>
     </div>

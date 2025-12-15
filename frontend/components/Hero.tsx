@@ -13,21 +13,21 @@ const Hero: React.FC<HeroProps> = ({ onStart, onQuickScan }) => {
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[600px] bg-indigo-500/20 rounded-full blur-[120px] -z-10 pointer-events-none" />
       <div className="absolute bottom-0 right-0 w-[800px] h-[500px] bg-purple-500/10 rounded-full blur-[100px] -z-10 pointer-events-none" />
 
-      <div className="max-w-4xl mx-auto space-y-8 animate-fade-in-up">
-        <h1 className="text-5xl md:text-7xl font-bold tracking-tight leading-tight">
+      <div className="max-w-4xl mx-auto space-y-10 animate-fade-in-up">
+        <h1 className="text-6xl md:text-8xl font-bold tracking-tight leading-tight">
           Detect XSS in your <br />
-          <span className="gradient-text">JS & PHP Code</span>
+          <span className="text-white">JS & PHP Code</span>
         </h1>
 
-        <p className="text-xl text-gray-400 max-w-2xl mx-auto leading-relaxed">
+        <p className="text-2xl text-gray-400 max-w-3xl mx-auto leading-relaxed">
           Connect your GitHub repository or paste code directly to scan for Cross-Site Scripting (XSS) and injection vulnerabilities instantly.
         </p>
 
-        <div className="pt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
-          <Button onClick={onQuickScan} className="w-full sm:w-auto h-12 px-8 text-base shadow-indigo-500/20">
+        <div className="pt-8 flex flex-col sm:flex-row items-center justify-center gap-6">
+          <Button onClick={onQuickScan} className="w-full sm:w-auto h-14 px-10 text-lg shadow-indigo-500/20">
             Quick Scan
           </Button>
-          <Button variant="secondary" onClick={onStart} className="w-full sm:w-auto h-12 px-8 text-base">
+          <Button variant="secondary" onClick={onStart} className="w-full sm:w-auto h-14 px-10 text-lg">
             Connect GitHub
           </Button>
         </div>
